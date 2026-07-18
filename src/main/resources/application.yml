@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: placardo
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/placardo
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: validate      # структуру БД создаёт только Liquibase
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 25MB
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            # Значения берутся из переменных окружения (файл .env / настройки IDE).
+            # Заглушка "not-configured" позволяет запустить сайт без ключей Google:
+            # обычная регистрация по email работает, а кнопка Google просто выдаст ошибку.
+            client-id: ${GOOGLE_CLIENT_ID:not-configured}
+            client-secret: ${GOOGLE_CLIENT_SECRET:not-configured}
+            scope: openid, profile, email
+        provider:
+          google:
+            # prompt=select_account — всегда показывать экран выбора аккаунта Google,
+            # а не входить молча под последним активным (стандартная продовая практика)
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth?prompt=select_account
+
+  cache:
+    type: caffeine
+    cache-names: categoryTree
+    caffeine:
+      spec: maximumSize=100,expireAfterWrite=1h
+
+app:
+  upload-dir: ./uploads     # куда сохраняются фотографии объявлений
+  ad-lifetime-days: 30      # через сколько дней активное объявление уходит в архив
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.placardo: DEBUG

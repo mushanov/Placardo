@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' — Placardo'">Placardo</title>
+    <!-- CSRF-токен для ajax-запросов (jQuery читает его в main.js) -->
+    <meta name="_csrf" th:content="${_csrf != null} ? ${_csrf.token} : ''">
+    <meta name="_csrf_header" th:content="${_csrf != null} ? ${_csrf.headerName} : ''">
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/logo.svg}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<header th:fragment="navbar" class="navbar">
+    <div class="container navbar-inner">
+        <a th:href="@{/}" class="brand">
+            <img th:src="@{/img/logo.svg}" alt="Placardo" class="brand-icon">
+            <span class="brand-name">Placardo</span>
+        </a>
+        <form th:action="@{/ads}" method="get" class="search-form">
+            <input type="search" name="q" placeholder="Поиск по объявлениям…" th:value="${q}">
+            <button type="submit" aria-label="Найти">🔍</button>
+        </form>
+        <nav class="nav-actions">
+            <th:block sec:authorize="isAuthenticated()">
+                <a th:href="@{/profile/favorites}" class="nav-link" title="Избранное">♥</a>
+                <a th:href="@{/profile/ads}" class="nav-link">Мои объявления</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/moderation}" class="nav-link nav-admin">Админка</a>
+                <!-- Кто сейчас вошёл: аватар + имя, в подсказке email; клик — настройки профиля -->
+                <a th:if="${currentUser != null}" th:href="@{/profile/settings}" class="user-chip"
+                   th:title="${currentUser.email}">
+                    <span class="avatar avatar-nav" th:text="${#strings.substring(currentUser.name, 0, 1)}">А</span>
+                    <span class="user-chip-name" th:text="${currentUser.name}">Имя</span>
+                </a>
+                <form th:action="@{/logout}" method="post" class="inline-form">
+                    <button type="submit" class="nav-link btn-link">Выйти</button>
+                </form>
+            </th:block>
+            <th:block sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="nav-link">Войти</a>
+            </th:block>
+            <a th:href="@{/ads/new}" class="btn btn-accent">+ Разместить</a>
+        </nav>
+    </div>
+</header>
+
+<footer th:fragment="footer" class="footer">
+    <div class="container">
+        <p>Placardo — учебный проект на Spring Boot · <a th:href="@{/swagger-ui.html}">Swagger API</a></p>
+    </div>
+</footer>
+
+<th:block th:fragment="scripts">
+    <script th:src="@{/js/vendor/jquery.min.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+</th:block>
+
+<!-- Переиспользуемая карточка объявления -->
+<div th:fragment="ad-card(ad)" class="card">
+    <a th:href="@{/ads/{id}(id=${ad.id})}" class="card-link">
+        <div class="card-photo">
+            <img th:if="${ad.coverImage != null}" th:src="${ad.coverImage}" alt="" loading="lazy">
+            <div th:if="${ad.coverImage == null}" class="card-photo-empty">📷</div>
+        </div>
+        <div class="card-body">
+            <p class="card-price"
+               th:text="${ad.price != null} ? ${#numbers.formatDecimal(ad.price, 1, 'WHITESPACE', 0, 'COMMA')} + ' ₽' : 'Даром'">45 000 ₽</p>
+            <p class="card-title" th:text="${ad.title}">Заголовок</p>
+            <p class="card-meta">
+                <span th:text="${ad.city != null} ? ${ad.city} : 'Онлайн'">Город</span> ·
+                <span th:text="${#temporals.format(ad.createdAt, 'dd.MM.yyyy')}">дата</span>
+            </p>
+        </div>
+    </a>
+</div>
+
+</body>
+</html>

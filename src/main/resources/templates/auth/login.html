@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Вход')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container container-narrow">
+    <h1>Вход</h1>
+
+    <div th:if="${registered}" class="flash">Регистрация прошла успешно — теперь войдите.</div>
+    <div th:if="${param.error}" class="flash flash-error">Неверный email или пароль (или аккаунт заблокирован).</div>
+    <div th:if="${param.oauthError}" class="flash flash-error">Не удалось войти через Google. Проверьте настройку ключей (README, раздел Google OAuth).</div>
+
+    <form th:action="@{/login}" method="post" class="form">
+        <label>Email
+            <input type="email" name="email" required autofocus>
+        </label>
+        <label>Пароль
+            <input type="password" name="password" required>
+        </label>
+        <button type="submit" class="btn btn-accent btn-wide">Войти</button>
+    </form>
+
+    <div class="divider">или</div>
+
+    <!-- Spring Security сам обрабатывает этот адрес и отправляет пользователя на Google -->
+    <a th:href="@{/oauth2/authorization/google}" class="btn btn-google btn-wide">
+        <span class="g-mark">G</span> Войти через Google
+    </a>
+
+    <p class="center-note">Нет аккаунта? <a th:href="@{/register}">Зарегистрироваться</a></p>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

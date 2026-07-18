@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Настройки')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container container-narrow">
+    <div th:if="${message}" class="flash" th:text="${message}"></div>
+    <h1>Настройки профиля</h1>
+
+    <div class="panel">
+        <p><strong>Email:</strong> <span th:text="${user.email}">email</span></p>
+        <p><strong>Способ входа:</strong>
+            <span th:text="${user.provider.name() == 'GOOGLE'} ? 'Google' : 'Email и пароль'">способ</span></p>
+        <p><strong>На Placardo с</strong> <span th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy')}">даты</span></p>
+    </div>
+
+    <form th:action="@{/profile/settings}" method="post" class="form">
+        <label>Отображаемое имя
+            <input type="text" name="name" th:value="${user.name}" minlength="2" maxlength="100" required>
+        </label>
+        <button type="submit" class="btn btn-accent">Сохранить</button>
+    </form>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

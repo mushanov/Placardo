@@ -1,0 +1,16 @@
+# Сборка
+target/
+*.jar
+!.mvn/wrapper/*.jar
+
+# Секреты — НИКОГДА не коммитить
+.env
+
+# Загруженные пользователями файлы
+uploads/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.log

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Доступ запрещён')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+<main class="container error-page">
+    <h1>403</h1>
+    <p>Недостаточно прав для этого действия.</p>
+    <a th:href="@{/}" class="btn btn-accent">На главную</a>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

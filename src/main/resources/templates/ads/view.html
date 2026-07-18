@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head(${ad.title})}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container">
+    <div th:if="${message}" class="flash" th:text="${message}"></div>
+
+    <p class="breadcrumbs">
+        <a th:href="@{/}">Главная</a> ·
+        <a th:href="@{/ads(category=${ad.categoryId})}" th:text="${ad.categoryName}">Категория</a>
+    </p>
+
+    <div class="ad-view">
+        <div class="ad-main">
+            <div class="gallery" th:if="${!ad.images.isEmpty()}">
+                <img id="gallery-main" th:src="${ad.images[0].url}" alt="Фото объявления">
+                <div class="gallery-thumbs" th:if="${ad.images.size() > 1}">
+                    <img th:each="img, st : ${ad.images}" th:src="${img.url}"
+                         th:classappend="${st.first} ? 'thumb-active'" class="js-thumb" alt="">
+                </div>
+            </div>
+            <div class="gallery gallery-empty" th:if="${ad.images.isEmpty()}">📷 Без фото</div>
+
+            <h1 th:text="${ad.title}">Заголовок</h1>
+            <p class="ad-meta">
+                <span th:text="${ad.city != null} ? ${ad.city} : 'Онлайн'">Город</span> ·
+                размещено <span th:text="${#temporals.format(ad.createdAt, 'dd.MM.yyyy HH:mm')}">дата</span>
+            </p>
+            <p class="ad-description" th:text="${ad.description}">Описание</p>
+        </div>
+
+        <aside class="ad-side">
+            <div class="panel">
+                <p class="ad-price"
+                   th:text="${ad.price != null} ? ${#numbers.formatDecimal(ad.price, 1, 'WHITESPACE', 0, 'COMMA')} + ' ₽' : 'Даром'">Цена</p>
+                <span class="badge" th:classappend="'badge-' + ${ad.status.toLowerCase()}"
+                      th:text="${ad.statusLabel}">Статус</span>
+                <th:block sec:authorize="isAuthenticated()">
+                    <button class="btn btn-outline js-fav" th:attr="data-ad-id=${ad.id}"
+                            th:text="${isFavorite} ? '♥ В избранном' : '♡ В избранное'">♡ В избранное</button>
+                </th:block>
+                <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="btn btn-outline">♡ В избранное</a>
+            </div>
+
+            <div class="panel seller">
+                <div class="avatar" th:text="${#strings.substring(ad.authorName, 0, 1)}">А</div>
+                <div>
+                    <p class="seller-name" th:text="${ad.authorName}">Продавец</p>
+                    <p class="seller-meta">продавец</p>
+                </div>
+            </div>
+
+            <div class="panel" th:if="${canManage}">
+                <p class="panel-title">Управление</p>
+                <a th:href="@{/ads/{id}/edit(id=${ad.id})}" class="btn btn-outline">Редактировать</a>
+                <form th:action="@{/ads/{id}/delete(id=${ad.id})}" method="post"
+                      onsubmit="return confirm('Удалить объявление?')">
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </aside>
+    </div>
+
+    <section class="comments">
+        <h2>Комментарии (<span id="comment-count" th:text="${comments.size()}">0</span>)</h2>
+        <div id="comment-list">
+            <div th:each="c : ${comments}" class="comment">
+                <div class="avatar avatar-sm" th:text="${#strings.substring(c.authorName, 0, 1)}">А</div>
+                <div class="comment-body">
+                    <p class="comment-head">
+                        <span th:text="${c.authorName}">Автор</span>
+                        <span class="comment-date" th:text="${#temporals.format(c.createdAt, 'dd.MM HH:mm')}">дата</span>
+                    </p>
+                    <p th:text="${c.body}">Текст</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Форма отправляется через ajax (main.js), страница не перезагружается -->
+        <form id="comment-form" th:attr="data-ad-id=${ad.id}" sec:authorize="isAuthenticated()">
+            <textarea id="comment-body" rows="2" maxlength="2000"
+                      placeholder="Написать комментарий…" required></textarea>
+            <button type="submit" class="btn btn-accent">Отправить</button>
+        </form>
+        <p sec:authorize="!isAuthenticated()" class="empty">
+            <a th:href="@{/login}">Войдите</a>, чтобы оставить комментарий.
+        </p>
+    </section>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

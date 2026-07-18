@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Мои объявления')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container">
+    <div th:if="${message}" class="flash" th:text="${message}"></div>
+    <h1>Мои объявления</h1>
+
+    <div class="table-wrap" th:if="${!ads.isEmpty()}">
+        <table class="table">
+            <thead>
+            <tr><th>Объявление</th><th>Цена</th><th>Статус</th><th>Создано</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="ad : ${ads}">
+                <td><a th:href="@{/ads/{id}(id=${ad.id})}" th:text="${ad.title}">Заголовок</a></td>
+                <td th:text="${ad.price != null} ? ${#numbers.formatDecimal(ad.price, 1, 'WHITESPACE', 0, 'COMMA')} + ' ₽' : 'Даром'">Цена</td>
+                <td><span class="badge" th:classappend="'badge-' + ${ad.status.name().toLowerCase()}"
+                          th:text="${ad.status.label}">Статус</span></td>
+                <td th:text="${#temporals.format(ad.createdAt, 'dd.MM.yyyy')}">дата</td>
+                <td class="actions">
+                    <a th:href="@{/ads/{id}/edit(id=${ad.id})}" class="btn btn-sm">Изменить</a>
+                    <form th:action="@{/ads/{id}/delete(id=${ad.id})}" method="post" class="inline-form"
+                          onsubmit="return confirm('Удалить объявление?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p th:if="${ads.isEmpty()}" class="empty">
+        У вас пока нет объявлений. <a th:href="@{/ads/new}">Разместить первое</a>
+    </p>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

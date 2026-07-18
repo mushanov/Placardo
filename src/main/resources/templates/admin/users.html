@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Пользователи')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container">
+    <nav class="admin-tabs">
+        <a th:href="@{/admin/moderation}" class="chip">Модерация</a>
+        <a th:href="@{/admin/users}" class="chip chip-active">Пользователи</a>
+        <a th:href="@{/admin/categories}" class="chip">Категории</a>
+    </nav>
+
+    <h1>Пользователи</h1>
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>Имя</th><th>Email</th><th>Вход</th><th>Роль</th><th>Статус</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.name}">Имя</td>
+                <td th:text="${u.email}">email</td>
+                <td th:text="${u.provider == 'GOOGLE'} ? 'Google' : 'Пароль'">вход</td>
+                <td th:text="${u.role}">роль</td>
+                <td><span class="badge" th:classappend="${u.status == 'BANNED'} ? 'badge-rejected' : 'badge-active'"
+                          th:text="${u.status == 'BANNED'} ? 'Забанен' : 'Активен'">статус</span></td>
+                <td>
+                    <!-- ajax PATCH /api/v1/admin/users/{id}/ban -->
+                    <button th:if="${u.role != 'ADMIN'}" class="btn btn-sm js-ban"
+                            th:attr="data-user-id=${u.id}"
+                            th:text="${u.status == 'BANNED'} ? 'Разбанить' : 'Забанить'">Забанить</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>
