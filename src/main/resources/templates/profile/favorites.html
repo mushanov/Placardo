@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Избранное')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container">
+    <h1>Избранное</h1>
+    <div class="card-grid">
+        <th:block th:each="ad : ${ads}">
+            <div th:replace="~{layout :: ad-card(${ad})}"></div>
+        </th:block>
+    </div>
+    <p th:if="${ads.isEmpty()}" class="empty">В избранном пусто. Нажимайте ♡ на объявлениях, чтобы сохранить их сюда.</p>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

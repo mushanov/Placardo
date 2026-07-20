@@ -1,0 +1,8 @@
+# Профиль для запуска внутри docker compose:
+# приложение обращается к базе по имени сервиса "postgres", а не localhost.
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/placardo
+
+app:
+  upload-dir: /app/uploads

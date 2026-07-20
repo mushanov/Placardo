@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Доска объявлений')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container">
+    <div th:if="${message}" class="flash" th:text="${message}"></div>
+
+    <div class="chips">
+        <a th:href="@{/ads}" class="chip chip-active">Все</a>
+        <a th:each="cat : ${categories}"
+           th:href="@{/ads(category=${cat.id})}"
+           th:text="${cat.name}" class="chip">Категория</a>
+    </div>
+
+    <h1>Свежие объявления</h1>
+    <div class="card-grid" id="ad-grid">
+        <th:block th:each="ad : ${ads.content}">
+            <div th:replace="~{layout :: ad-card(${ad})}"></div>
+        </th:block>
+    </div>
+    <p th:if="${ads.totalElements == 0}" class="empty">Пока нет объявлений — разместите первое!</p>
+
+    <div class="center" th:if="${!ads.last}">
+        <a th:href="@{/ads}" class="btn">Смотреть весь каталог</a>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

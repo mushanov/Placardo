@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Категории')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container">
+    <nav class="admin-tabs">
+        <a th:href="@{/admin/moderation}" class="chip">Модерация</a>
+        <a th:href="@{/admin/users}" class="chip">Пользователи</a>
+        <a th:href="@{/admin/categories}" class="chip chip-active">Категории</a>
+    </nav>
+
+    <h1>Категории</h1>
+    <div th:if="${message}" class="flash" th:text="${message}"></div>
+    <div th:if="${error}" class="flash flash-error" th:text="${error}"></div>
+
+    <div class="admin-columns">
+        <div>
+            <ul class="cat-tree">
+                <li th:each="root : ${categories}">
+                    <strong th:text="${root.name}">Категория</strong>
+                    <span class="hint-inline" th:text="'(' + ${root.slug} + ')'"></span>
+                    <ul>
+                        <li th:each="child : ${root.children}">
+                            <span th:text="${child.name}">Подкатегория</span>
+                            <span class="hint-inline" th:text="'(' + ${child.slug} + ')'"></span>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <form th:action="@{/admin/categories}" method="post" class="form panel">
+                <p class="panel-title">Новая категория</p>
+                <label>Название
+                    <input type="text" name="name" required maxlength="100" placeholder="Книги">
+                </label>
+                <label>Slug <span class="hint-inline">(латиницей, для адресов)</span>
+                    <input type="text" name="slug" required maxlength="100" pattern="[a-z0-9\-]+" placeholder="books">
+                </label>
+                <label>Родительская категория
+                    <select name="parentId">
+                        <option value="">— корневая —</option>
+                        <option th:each="root : ${categories}" th:value="${root.id}" th:text="${root.name}"></option>
+                    </select>
+                </label>
+                <button type="submit" class="btn btn-accent">Создать</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

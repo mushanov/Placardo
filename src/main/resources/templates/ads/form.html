@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head(${editing} ? 'Редактирование' : 'Новое объявление')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container container-narrow">
+    <h1 th:text="${editing} ? 'Редактирование объявления' : 'Новое объявление'">Новое объявление</h1>
+    <p class="hint" th:if="${editing}">После сохранения объявление снова попадёт на модерацию.</p>
+
+    <form th:action="${editing} ? @{/ads/{id}(id=${adId})} : @{/ads}"
+          th:object="${adForm}" method="post" enctype="multipart/form-data" class="form">
+
+        <label>Заголовок
+            <input type="text" th:field="*{title}" maxlength="150" required>
+            <span class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+        </label>
+
+        <label>Категория
+            <select th:field="*{categoryId}" required>
+                <option value="">— выберите —</option>
+                <optgroup th:each="root : ${categories}" th:label="${root.name}">
+                    <option th:value="${root.id}" th:text="${root.name} + ' (все)'"></option>
+                    <option th:each="child : ${root.children}" th:value="${child.id}" th:text="${child.name}"></option>
+                </optgroup>
+            </select>
+            <span class="field-error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></span>
+        </label>
+
+        <div class="form-row">
+            <label>Цена, ₽ <span class="hint-inline">(пусто = «Даром»)</span>
+                <input type="number" th:field="*{price}" min="0" step="1">
+                <span class="field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+            </label>
+            <label>Город
+                <input type="text" th:field="*{city}" maxlength="100" placeholder="Москва">
+            </label>
+        </div>
+
+        <label>Описание
+            <textarea th:field="*{description}" rows="6" maxlength="5000" required></textarea>
+            <span class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+        </label>
+
+        <div th:if="${editing and existingImages != null and !existingImages.isEmpty()}" class="existing-images">
+            <p>Текущие фотографии:</p>
+            <div class="thumb-row">
+                <div th:each="img : ${existingImages}" class="thumb-wrap">
+                    <img th:src="${img.url}" alt="">
+                    <!-- Удаление фото ajax-запросом DELETE /api/v1/images/{id} -->
+                    <button type="button" class="thumb-delete js-delete-image"
+                            th:attr="data-image-id=${img.id}" title="Удалить">✕</button>
+                </div>
+            </div>
+        </div>
+
+        <label>Фотографии <span class="hint-inline">(JPEG/PNG/WebP, до 5 МБ, максимум 10)</span>
+            <input type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple>
+        </label>
+
+        <button type="submit" class="btn btn-accent btn-wide"
+                th:text="${editing} ? 'Сохранить изменения' : 'Опубликовать'">Опубликовать</button>
+    </form>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

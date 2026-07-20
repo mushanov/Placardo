@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: placardo-postgres
+    environment:
+      POSTGRES_DB: placardo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: ${TZ:-Europe/Moscow}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d placardo"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+
+  app:
+    build: .
+    container_name: placardo-app
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-not-configured}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-not-configured}
+      TZ: ${TZ:-Europe/Moscow}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg_data:

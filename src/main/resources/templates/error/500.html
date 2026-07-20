@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Ошибка сервера')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+<main class="container error-page">
+    <h1>500</h1>
+    <p>Что-то пошло не так на сервере. Подробности — в логах приложения.</p>
+    <a th:href="@{/}" class="btn btn-accent">На главную</a>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

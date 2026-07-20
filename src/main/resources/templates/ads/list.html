@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Каталог')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container">
+    <div class="chips">
+        <a th:href="@{/ads(q=${q})}" th:classappend="${selectedCategory == null} ? 'chip-active'" class="chip">Все</a>
+        <a th:each="cat : ${categories}"
+           th:href="@{/ads(category=${cat.id}, q=${q})}"
+           th:classappend="${selectedCategory == cat.id} ? 'chip-active'"
+           th:text="${cat.name}" class="chip">Категория</a>
+    </div>
+
+    <h1 th:text="${q != null and !q.isBlank()} ? 'Результаты поиска: ' + ${q} : 'Каталог'">Каталог</h1>
+
+    <div class="card-grid" id="ad-grid"
+         th:attr="data-q=${q},data-category=${selectedCategory},data-page=${ads.number}">
+        <th:block th:each="ad : ${ads.content}">
+            <div th:replace="~{layout :: ad-card(${ad})}"></div>
+        </th:block>
+    </div>
+    <p th:if="${ads.totalElements == 0}" class="empty">Ничего не нашлось. Попробуйте изменить запрос.</p>
+
+    <div class="center" th:if="${!ads.last}">
+        <!-- Кнопка ajax-подгрузки: main.js дергает GET /api/v1/ads и дорисовывает карточки -->
+        <button id="load-more" class="btn">Показать ещё</button>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

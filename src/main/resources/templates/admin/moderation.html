@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Модерация')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+
+<main class="container">
+    <nav class="admin-tabs">
+        <a th:href="@{/admin/moderation}" class="chip chip-active">Модерация</a>
+        <a th:href="@{/admin/users}" class="chip">Пользователи</a>
+        <a th:href="@{/admin/categories}" class="chip">Категории</a>
+    </nav>
+
+    <h1>Объявления на модерации</h1>
+
+    <div class="table-wrap" th:if="${!ads.isEmpty()}">
+        <table class="table">
+            <thead>
+            <tr><th>Объявление</th><th>Автор</th><th>Категория</th><th>Создано</th><th>Решение</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="ad : ${ads}" th:attr="data-row-ad=${ad.id}">
+                <td><a th:href="@{/ads/{id}(id=${ad.id})}" th:text="${ad.title}">Заголовок</a></td>
+                <td th:text="${ad.user.name}">Автор</td>
+                <td th:text="${ad.category.name}">Категория</td>
+                <td th:text="${#temporals.format(ad.createdAt, 'dd.MM HH:mm')}">дата</td>
+                <td class="actions">
+                    <!-- ajax PATCH /api/v1/admin/ads/{id}/status -->
+                    <button class="btn btn-sm btn-approve js-moderate"
+                            th:attr="data-ad-id=${ad.id},data-status='ACTIVE'">Одобрить</button>
+                    <button class="btn btn-sm btn-danger js-moderate"
+                            th:attr="data-ad-id=${ad.id},data-status='REJECTED'">Отклонить</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p th:if="${ads.isEmpty()}" class="empty">Очередь модерации пуста 🎉</p>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

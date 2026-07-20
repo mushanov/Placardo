@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Страница не найдена')}"></head>
+<body>
+<header th:replace="~{layout :: navbar}"></header>
+<main class="container error-page">
+    <h1>404</h1>
+    <p>Такой страницы нет — возможно, объявление уже сняли с публикации.</p>
+    <a th:href="@{/}" class="btn btn-accent">На главную</a>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>
